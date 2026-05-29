@@ -10,7 +10,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
 import mongoose from 'mongoose';
-import { createProxyMiddleware } from 'http-proxy-middleware';
+
 import { connectDB } from './config/db';
 import authRoutes from './routes/authRoutes';
 import deliveryRoutes from './routes/deliveryRoutes';
@@ -116,6 +116,8 @@ app.get('/api/env-check', (req: Request, res: Response) => {
 });
 
 if (process.env.NODE_ENV === 'development') {
+  // Dynamically load proxy middleware to avoid ES module loading failures in production serverless execution
+  const { createProxyMiddleware } = require('http-proxy-middleware');
   const devProxy = createProxyMiddleware({
     target: 'http://127.0.0.1:5173',
     changeOrigin: true,
